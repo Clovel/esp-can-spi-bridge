@@ -1,0 +1,63 @@
+# Project build files ---------------------------
+Debug*/
+build*/
+Testing*/
+image_*/
+output/
+libdeps/
+
+# CMake related files ---------------------------
+Makefile
+CMakeCache.txt
+.project
+.settings
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+CMakeFiles/
+CMakeScripts/
+
+# VS Code related files -------------------------
+.vscode/
+
+# Doxygen related files -------------------------
+html/
+latex/
+man/
+Doxyfile
+
+# MS Office related files -----------------------
+~*
+
+# Unix related files ----------------------------
+*.swp
+
+# Uncrustify related files ----------------------
+*.unc-backup*
+#*.unc-backup.md5*
+src_file_list*.txt
+
+# pkg-config generated files --------------------
+*.pc
+
+# Binary files ----------------------------------
+a.out
+*.exe
+*.dll
+*.dylib
+*.a
+*.so
+*.o
+
+# macOS files -----------------------------------
+.DS_Store
+
+# PlatformIO IDE files --------------------------
+.pio
+.vscode/.browse.c_cpp.db*
+.vscode/c_cpp_properties.json
+.vscode/launch.json
+.vscode/ipch
