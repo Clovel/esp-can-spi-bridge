@@ -4,6 +4,9 @@
  * @file CANMsgFifo.hpp
  */
 
+#ifndef CANMSGFIFO_HPP
+#define CANMSGFIFO_HPP
+
 /* Includes -------------------------------------------- */
 #include "CANMessage.hpp"
 
@@ -45,3 +48,5 @@ class CANMsgFifo {
         bool        mWIdxWrapAround;    /**< Write index wraparound flag */
     private:
 };
+
+#endif /* CANMSGFIFO_HPP */

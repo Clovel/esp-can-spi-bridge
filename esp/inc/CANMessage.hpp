@@ -4,6 +4,9 @@
  * @file CANMessage.hpp
  */
 
+#ifndef CANMESSAGE_HPP
+#define CANMESSAGE_HPP
+
 /* Includes -------------------------------------------- */
 #include <Arduino.h>
 
@@ -25,3 +28,5 @@ class CANMessage {
             const uint8_t &pFlags,
             const uint8_t *pData = nullptr);
 };
+
+#endif /* CANMESSAGE_HPP */
