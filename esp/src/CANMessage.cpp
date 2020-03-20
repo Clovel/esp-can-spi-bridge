@@ -27,3 +27,16 @@ CANMessage::CANMessage(const uint32_t &pID,
         }
     }
 }
+
+CANMessage CANMessage::operator=(const CANMessage &pOther) {
+    /* Check for self assignment */
+    if(this != &pOther) {
+        this->id = pOther.id;
+        this->dlc = pOther.dlc;
+        this->flags = pOther.flags;
+        
+        for(uint8_t i = 0U; (i < this->dlc) && (i < CAN_MSG_MAX_LEN); i++) {
+            this->data[i] = pOther.data[i];
+        }
+    }
+}
