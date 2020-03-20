@@ -26,6 +26,7 @@ typedef enum _fifoState {
 /* FIFO class ----------------------------------------- */
 template <typename T>
 class Fifo {
+    public:
         Fifo(const size_t &pSize) : mSize(pSize)
         {
             mFifo = (T *)malloc(mSize * sizeof(T));
@@ -37,13 +38,8 @@ class Fifo {
 
         /* FIFO managament */
         int getMsg(T &pData) {
-            pMsg.id    = (mFifo + mRIdx)->id;
-            pMsg.dlc   = (mFifo + mRIdx)->dlc;
-            pMsg.flags = (mFifo + mRIdx)->flags;
-
-            for(uint8_t i = 0U; (i < pMsg.dlc) && (i < CAN_MSG_MAX_LEN); i++) {
-                pMsg.data[i] = (mFifo + mRIdx)->data[i];
-            }
+            /* Copy the data in the output */
+            pData = *(mFifo + mRIdx);
 
             /* Increment the read index of the FIFO */
             mRIdx++;
@@ -60,14 +56,8 @@ class Fifo {
                 return 1;
             }
 
-            /* Copy the CAN Message */
-            (mFifo + mWIdx)->id    = pMsg.id;
-            (mFifo + mWIdx)->dlc  = pMsg.dlc;
-            (mFifo + mWIdx)->flags = pMsg.flags;
-
-            for(uint8_t i = 0U; (i < pMsg.dlc) && (i < CAN_MSG_MAX_LEN); i++) {
-                (mFifo + mWIdx)->data[i] = pMsg.data[i];
-            }
+            /* Copy the data into the Fifo */
+            *(mFifo + mWIdx) = pData;
 
             /* Increment the write index of the FIFO */
             mWIdx++;
@@ -108,6 +98,8 @@ class Fifo {
         size_t      mWIdx;              /**< FIFO buffer write index */
         bool        mRIdxWrapAround;    /**< Read index wraparound flag */
         bool        mWIdxWrapAround;    /**< Write index wraparound flag */
+
+    private:
 };
 
 #endif /* FIFO_HPP */
