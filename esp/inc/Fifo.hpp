@@ -27,7 +27,12 @@ typedef enum _fifoState {
 template <typename T>
 class Fifo {
     public:
-        Fifo(const size_t &pSize) : mSize(pSize)
+        Fifo(const size_t &pSize) : 
+            mSize(pSize),
+            mRIdx(0U),
+            mWIdx(0U),
+            mRIdxWrapAround(false),
+            mWIdxWrapAround(false)
         {
             mFifo = (T *)malloc(mSize * sizeof(T));
         }
@@ -37,7 +42,11 @@ class Fifo {
         }
 
         /* FIFO managament */
-        int getMsg(T &pData) {
+        int getData(T &pData) {
+            if(FIFO_EMPTY == state()) {
+                return 1;
+            }
+
             /* Copy the data in the output */
             pData = *(mFifo + mRIdx);
 
@@ -51,7 +60,7 @@ class Fifo {
             return 0;
         }
 
-        int putMsg(const T &pData) {
+        int putData(const T &pData) {
             if(FIFO_FULL == state()) {
                 return 1;
             }
@@ -92,7 +101,7 @@ class Fifo {
         };
 
     protected:
-        CANMessage *mFifo;              /**< FIFO buffer */
+        T          *mFifo;              /**< FIFO buffer */
         size_t      mSize;              /**< FIFO buffer size */
         size_t      mRIdx;              /**< FIFO buffer read index */
         size_t      mWIdx;              /**< FIFO buffer write index */
