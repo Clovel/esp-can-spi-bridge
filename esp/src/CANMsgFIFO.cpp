@@ -17,7 +17,7 @@
 /* CAN Message FIFO class implementation --------------- */
 CANMsgFifo::CANMsgFifo(const size_t &pSize) : mSize(pSize)
 {
-    mFifo = (CANMessage *)malloc(mSize*sizeof(CANMessage));
+    mFifo = (CANMessage *)malloc(mSize * sizeof(CANMessage));
 }
 
 CANMsgFifo::~CANMsgFifo() {
@@ -45,7 +45,6 @@ int CANMsgFifo::getMsg(CANMessage &pMsg) {
 }
 
 int CANMsgFifo::putMsg(const CANMessage &pMsg) {
-
     if(FIFO_FULL == state()) {
         return 1;
     }
