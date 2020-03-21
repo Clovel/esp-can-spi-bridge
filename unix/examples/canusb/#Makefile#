@@ -1,0 +1,15 @@
+:q
+#TOPDIR  := $(shell cd ../..; pwd)
+
+CC=gcc
+CFLAGS=-L. -lftd2xx -ld2xx_table -Wl,-rpath /usr/local/lib
+
+APP = test_canusb
+
+all: $(APP)
+
+$(APP): main.c	
+	$(CC) -o $(APP) $(CFLAGS) main.c	
+
+clean:
+	rm -f *.o ; rm $(APP)

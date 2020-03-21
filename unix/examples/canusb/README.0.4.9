@@ -1,0 +1,110 @@
+
+Lawicel CANUSB Driver usage under Linux
+=======================================
+
+This is a very simple example on how to use the Lawicel AB CANUSB adapter under Linux.
+Instructions and the code for the FTDI driver used is included in this document but can
+also be retrived from the ftdi site http://www.ftdichip.com/.
+
+
+Instructions for installing the d2xx shared lib
+===============================================
+
+As Linux distributions vary these instructions are a guide to installation and use.
+This setup works with Mandrake 9.2 and Redhat/Fedora distributions but may require some 
+investigation on other distributions.
+
+This library has been tested using kernel 2.4.25. 
+Limited testing on kernel 2.6 has been carried out. Please contact ftdi support with your
+issues.
+
+Full D2XX documentation is available for the Windows dll. 
+
+1. As root user copy the following files to /usr/local/lib
+cp libftd2xx.so.0.4.10 /usr/local/lib
+
+2. copy libd2xx_table.so to /usr/lib
+cp libd2xx_table.so /usr/lib
+
+3. Change directory to /usr/local/lib
+cd /usr/local/lib
+
+4. make symbolic links to these files using the following commands:
+ln -s libftd2xx.so.0.4.10 libftd2xx.so
+
+5. Change directory to /usr/lib
+cd /usr/lib
+
+6. make symbolic links to these files using the following commands:
+ln -s /usr/local/lib/libftd2xx.so.0.4.10 libftd2xx.so
+
+7. Add the following line to /etc/fstab:
+
+Mandrake
+========
+none /proc/bus/usb usbdevfs defaults,devmode=0666 0 0
+
+Redhat and Fedora
+=================
+none /proc/bus/usb usbdevfs defaults,mode=0666 0 0
+
+use "usbfs" instead of "usbdevfs" in 2.6 kernels
+
+Debian, Ubuntu
+==============
+none /proc/bus/usb   usbfs   defaults,devmode=0666   0 0
+
+use "usbfs" instead of "usbdevfs" in 2.6 kernels
+
+7. Remount all in the fstab file
+mount -a
+
+8.) Build the sample with 'make'
+
+9. run the sample 'test_canusb' which will demonstrate how to use the canusb adapter 
+through a few simple samples. Remember to do this test as the root user to prevent influence from security settings.
+
+
+This will work smoothly in most cases. Sometime ther can be minor problems. One common 
+problem is that a serial driver already has taken the USB channel. To resolv this
+  
+1. you must unload this driver (and usbserial) if it is attached to your device 
+
+"rmmod ftdi_sio" 
+
+and 
+
+"rmmod usbserial"
+
+as root user. 
+
+Also check that the adapter is visible to the system with
+
+"cat /proc/bus/usb/devices"
+
+which will give a result with the following form
+
+T:  Bus=02 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  2 Spd=12  MxCh= 0
+D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS= 8 #Cfgs=  1
+P:  Vendor=0403 ProdID=ffa8 Rev= 4.00
+S:  Manufacturer=LAWICEL
+S:  Product=CANUSB
+S:  SerialNumber=LWO65RKA
+C:* #Ifs= 1 Cfg#= 1 Atr=80 MxPwr= 60mA
+I:  If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+E:  Ad=81(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+
+if# is the adapter index that is used fo ft_Open
+
+---
+
+On may systems the usb device is only writeable for the root user. You may therefore have to change the permissions for the device in /proc/bus/usb/n where "n" is the listed after "Dev#=" when you do "cat /proc/bus/usb/devices"
+
+
+
+
+Good Luck!
+
+Lawicel AB
+
