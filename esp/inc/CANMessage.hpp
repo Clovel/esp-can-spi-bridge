@@ -28,7 +28,7 @@ class CANMessage {
             const uint8_t &pFlags,
             const uint8_t *pData = nullptr);
 
-        CANMessage operator=(const CANMessage &pOther);
+        CANMessage &operator=(const CANMessage &pOther);
 };
 
 

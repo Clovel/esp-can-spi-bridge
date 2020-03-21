@@ -28,7 +28,7 @@ CANMessage::CANMessage(const uint32_t &pID,
     }
 }
 
-CANMessage CANMessage::operator=(const CANMessage &pOther) {
+CANMessage &CANMessage::operator=(const CANMessage &pOther) {
     /* Check for self assignment */
     if(this != &pOther) {
         this->id = pOther.id;
@@ -39,4 +39,6 @@ CANMessage CANMessage::operator=(const CANMessage &pOther) {
             this->data[i] = pOther.data[i];
         }
     }
+
+    return *this;
 }
