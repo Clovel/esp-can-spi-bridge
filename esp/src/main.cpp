@@ -5,15 +5,10 @@
  */
 
 /* Includes -------------------------------------------- */
-#include "def.h"
-#include "can-232.h"
-
-#include <mcp_can.h>
-#include <SPI.h>
-#include <SoftwareSerial.h>
+#include <Arduino.h>
 
 /* Defines --------------------------------------------- */
-#define HSPI_CS_PIN D8
+#define LOG_BAUDRATE 115200U
 
 /* Global variables ------------------------------------ */
 
@@ -24,18 +19,12 @@ void setup(void) {
     /* Set up Serial port */
     Serial.begin(LOG_BAUDRATE);
 
-    /* Set up the CAN port */
-    Can232::init(CAN_125KBPS, HSPI_CS_PIN);
-
     /* End of setup */
+    Serial.println("[BOOT ] Boot successful !");
 }
 
 /* Event callbacks ------------------------------------- */
-void serialEvent() {
-    Can232::serialEvent();
-}
 
 /* Loop routine ---------------------------------------- */
 void loop() {
-    Can232::loop();
 }
