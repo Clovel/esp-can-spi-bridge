@@ -21,19 +21,10 @@
 #define LOG_BAUDRATE 115200U
 
 /* GPIO pins */
-#define GPIO_4  T0
-#define GPIO_0  T1
-#define GPIO_2  T2
-#define GPIO_15 T3
-#define GPIO_13 T4
-#define GPIO_12 T5
-#define GPIO_14 T6
-#define GPIO_27 T7
-#define GPIO_33 T8
-#define GPIO_32 T9
+#define MCP_INT_PIN 4
 
 /* CAN SPI defines */
-#define CAN_BAUDRATE            CAN_1000KBPS
+#define CAN_BAUDRATE            CAN_500KBPS
 #define CAN_MESSAGE_MAX_SIZE    8U
 #define CAN_SPI_CS              5   /* VSPI used by default by SPI.h/.cpp for ESP32 Devkit v1 */
 #define CAN_SPI_MOSI            19  /* VSPI used by default by SPI.h/.cpp for ESP32 Devkit v1 */
@@ -71,6 +62,15 @@ void printRxCANMsg(const uint32_t &pCOBID, const uint8_t &pLen, const uint8_t * 
     printCANMsg(pCOBID, pLen, pData, pFlags, pNewLine);
 }
 
+/* Interrupts ------------------------------------------ */
+void IRAM_ATTR MCP_GeneralInt_Falling(void) {
+    Serial.println("[ INT ] <MCP_GeneralInt> FALLING");
+}
+
+void IRAM_ATTR MCP_GeneralInt_Rising(void) {
+    Serial.println("[ INT ] <MCP_GeneralInt> RISING");
+}
+
 /* On-boot routine ------------------------------------- */
 void setup(void) {
     /* Set up Serial port */
@@ -83,15 +83,19 @@ void setup(void) {
         while(true);
     }
     gCAN.setMode(MCP_NORMAL); // Set operation mode to normal so the MCP2515 sends acks to received data.
+    
+    /* Set up interrupts */
+    pinMode(MCP_INT_PIN, INPUT);
+    attachInterrupt(MCP_INT_PIN, MCP_GeneralInt_Falling, FALLING);
+    attachInterrupt(MCP_INT_PIN, MCP_GeneralInt_Rising, RISING);
 
     /* End of setup */
     Serial.println("[BOOT ] Boot successful !");
 }
 
-/* Event callbacks ------------------------------------- */
-
 /* Loop routine ---------------------------------------- */
 void loop(void) {
+    static uint8_t  sMCPError = 0x00U;
     static uint32_t sCOBID = 0x001U;
     static uint8_t  sData[CAN_MESSAGE_MAX_SIZE];
 
@@ -107,6 +111,35 @@ void loop(void) {
     sData[5U] = 0xABU;
     sData[6U] = 0xCDU;
     sData[7U] = 0xEFU;
+    /* Check for errors */
+    if(CAN_OK != gCAN.checkError()) {
+        Serial.println("[ERROR] Detected error w/ MCP_CAN::checkError");
+        sMCPError = gCAN.getError();
+        if(MCP_EFLG_RX1OVR == (MCP_EFLG_RX1OVR & sMCPError)) {
+            //Serial.println("        Rx buffer 1 overflow");
+        }
+        if(MCP_EFLG_RX0OVR == (MCP_EFLG_RX0OVR & sMCPError)) {
+            //Serial.println("        Rx buffer 0 overflow");
+        }
+        if(MCP_EFLG_TXBO == (MCP_EFLG_TXBO & sMCPError)) {
+            Serial.println("        BUS-OFF");
+        }
+        if(MCP_EFLG_TXEP == (MCP_EFLG_TXEP & sMCPError)) {
+            Serial.println("        Tx ERROR-PASSIVE");
+        }
+        if(MCP_EFLG_RXEP == (MCP_EFLG_RXEP & sMCPError)) {
+            Serial.println("        Rx ERROR-PASSIVE");
+        }
+        if(MCP_EFLG_TXWAR == (MCP_EFLG_TXWAR & sMCPError)) {
+            Serial.println("        Tx ERROR-WARNING");
+        }
+        if(MCP_EFLG_RXWAR == (MCP_EFLG_RXWAR & sMCPError)) {
+            Serial.println("        Rx ERROR-WARNING");
+        }
+        if(MCP_EFLG_EWARN == (MCP_EFLG_EWARN & sMCPError)) {
+            Serial.println("        ERROR-WARNING");
+        }
+    }
 
     /* Send the message */
     byte lStatusCode = gCAN.sendMsgBuf(sCOBID, CAN_MESSAGE_MAX_SIZE, sData);
